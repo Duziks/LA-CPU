@@ -49,6 +49,7 @@ logic         es_to_ds_load_op; // EXE是否为ld_w指令
 logic         block_id;      // hazard输出：阻塞ID阶段
 logic         block_if;      // hazard输出：阻塞IF阶段
 logic         br_stall;      // hazard输出：分支阻塞
+logic         load_use_hazard; // hazard输出：Load-Use冲突标志（用于调试）
 // -------------------------- 新增前递相关信号 --------------------------
 logic        exe_forward_valid;
 logic [4:0]  exe_forward_addr;
@@ -167,7 +168,8 @@ hazard hazard_u(
     .mem_forward_valid (mem_forward_valid ),
     .block_id       (block_id       ),
     .block_if       (block_if       ),
-    .br_stall       (br_stall       )
+    .br_stall       (br_stall       ),
+    .load_use_hazard (load_use_hazard)  // 新增：Load-Use冲突标志输出
 );
 // -------------------------- 阶段间allowin连接 --------------------------
 assign ds_allowin = id_stage.ds_allowin;

@@ -22,7 +22,8 @@ module hazard(
     // 输出：阻塞信号
     output logic         block_id      ,  // 阻塞ID阶段
     output logic         block_if      ,  // 阻塞IF阶段
-    output logic         br_stall        // 分支阻塞（传递到IF阶段）
+    output logic         br_stall      ,  // 分支阻塞（传递到IF阶段）
+    output logic         load_use_hazard  // Load-use冲突标志（用于波形调试）
 );
 
 // -------------------------- 新增：显式声明所有冲突检测信号 --------------------------
@@ -32,7 +33,7 @@ logic mem_conflict_r1;   // MEM阶段对r1的冲突（前递无法解决）
 logic mem_conflict_r2;   // MEM阶段对r2的冲突（前递无法解决）
 logic wb_conflict_r1;    // WB阶段对r1的冲突
 logic wb_conflict_r2;    // WB阶段对r2的冲突
-logic load_use_hazard;   // Load-use冲突（前递无法解决）
+// load_use_hazard现在是输出端口，无需在此声明
 
 // 冲突检测逻辑：排除可通过前递解决的冲突
 assign exe_conflict_r1 = es_valid && (es_to_ds_dest != 5'd0) && (es_to_ds_dest == id_raddr1) && !exe_forward_valid;
