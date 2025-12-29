@@ -43,9 +43,11 @@ assign mem_conflict_r2 = ms_valid && (ms_to_ds_dest != 5'd0) && (ms_to_ds_dest =
 assign wb_conflict_r1 = ws_valid && (ws_to_ds_dest != 5'd0) && (ws_to_ds_dest == id_raddr1);
 assign wb_conflict_r2 = ws_valid && (ws_to_ds_dest != 5'd0) && (ws_to_ds_dest == id_raddr2);
 
-// Load-use冲突：仅当MEM前递无效时才阻塞（Load进入MEM后可前递）
-assign load_use_hazard = es_valid && es_to_ds_load_op && (es_to_ds_dest != 5'd0) && 
-                        (es_to_ds_dest == id_raddr1 || es_to_ds_dest == id_raddr2) && !mem_forward_valid;
+// Load-use冲突：仅当同一目的寄存器在MEM阶段还不可前递时才阻塞
+// 需要同时满足：EXE是Load、ID读同一寄存器、且MEM阶段没有对同一寄存器的可用前递
+assign load_use_hazard = es_valid && es_to_ds_load_op && (es_to_ds_dest != 5'd0) &&
+                         ( (es_to_ds_dest == id_raddr1) || (es_to_ds_dest == id_raddr2) ) &&
+                         !(mem_forward_valid && (ms_to_ds_dest == es_to_ds_dest));
 
 // 阻塞信号生成（组合逻辑）
 assign block_id = reset ? 1'b0 : (id_valid && (load_use_hazard || exe_conflict_r1 || exe_conflict_r2 || 
